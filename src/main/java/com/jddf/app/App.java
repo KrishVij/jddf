@@ -1,4 +1,4 @@
-package com.jddf.app; 
+ package com.jddf.app; 
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.Loader;
@@ -19,6 +19,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripperByArea;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -338,19 +339,46 @@ public class App extends PDFStreamEngine {
 				streams.next();
 
 			}
-
+			
 			page.setContents(newStreams);
 		}
 
-		document.save(file);
+		document.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output-redume.pdf"));
 		System.out.println(streamCounter);
 	}
+
+	public void searchWordByLine(PDDocument document, String searchTerm) throws IOException {
+
+		String text = extractText(document);
+
+		String[] sentences = text.split("\n");
+
+		boolean isFound = false;
+		for (String sentence : sentences) {
+
+			String[] words = sentence.split("\\s+");
+
+			for (String word : words) {
+
+				if (word.equals(searchTerm)) {
+
+					isFound = true;
+					System.out.println(sentence);
+				}
+			}
+		}
+
+		if (!isFound) {
+
+			System.out.println("[Error]Word does not exist");
+		}
+	}
 	
-	public void saveDocument(PDDocument document, File file) throws IOException{
+	public void saveDocument(PDDocument document, File file) throws IOException {
 
 		document.save(file);
 	}
-	
+
 	public static void main(String[] args) {
 
 		App app = new App();
@@ -359,7 +387,7 @@ public class App extends PDFStreamEngine {
 		
 		//ArrayList<BufferedImage> imageArray = new ArrayList<>();
 
-		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/krish_Resume - Copy.pdf");
+		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/file-sample_150kB.pdf");
 
 		try (PDDocument document = Loader.loadPDF(file)) {
 
@@ -373,11 +401,14 @@ public class App extends PDFStreamEngine {
 
 			// String text = app.extractText(document);
 
+			// System.out.println(text);
+
 			// app.extractTextColor(document);
 
 			// System.out.println("Text in pdf: " + text);
 
-			app.setTextColor(document, file, "1.0", "0.0", "0.0");
+			//app.setTextColor(document, file, "1.0", "0.0", "0.0");
+			app.searchWordByLine(document, "lorem");
 
 			//app.setTextColor(document, file, "1.0", "0.0", "0.0");
 
