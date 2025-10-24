@@ -485,6 +485,7 @@ public class App extends PDFStreamEngine {
 
 		var documents = new ArrayList<PDDocument>();
 
+		String outputPath = "C:/Users/Krish Vij/OneDrive/Documents/output" + System.nanoTime() + ".pdf";
 		try (PDDocument doc = new PDDocument()) {
 
 			for (int i = 0; i < imagepath.length; i++) {
@@ -499,14 +500,16 @@ public class App extends PDFStreamEngine {
 						
 						contents.drawImage(pdImage, 20, 20);
 					}
-				
-				documents.add(doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output" + System.nanoTime() + ".pdf")));
+
+				doc.save(new File(outputPath));
+
+				documents.add(doc);
 			}
 		}
 
 		// PDDocument destination = documents.get(0);
 
-		PDDocument[] documentsArray = documents.toArray();
+		PDDocument[] documentsArray = documents.toArray(new PDDocument[0]);
 		mergePDFS(documentsArray);
 	}
 	
