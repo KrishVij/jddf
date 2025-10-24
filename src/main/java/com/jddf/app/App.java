@@ -16,6 +16,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.font.FontInfo;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -26,6 +29,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -280,7 +284,7 @@ public class App extends PDFStreamEngine {
 		return nameOfColor;
 	}
 
-	public void setTextColor(PDDocument document, File file, String r, String g, String b) throws IOException {
+	public void setTextColor(PDDocument document, String r, String g, String b) throws IOException {
 
 		float	RED	  = Float.parseFloat(r);
 		float	GREEN = Float.parseFloat(g);
@@ -343,10 +347,27 @@ public class App extends PDFStreamEngine {
 			page.setContents(newStreams);
 		}
 
-		document.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output-redume.pdf"));
+		document.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output-resume.pdf"));
 		System.out.println(streamCounter);
 	}
 
+	public void listFonts(PDDocument document) throws IOException {
+
+		PDPageTree pages = document.getPages();
+
+		for (PDPage page : pages) {
+
+			PDResources resources = page.getResources();
+
+			Iterable<COSName> fontnames =  resources.getFontNames();
+			for (COSName fontname : fontnames) {
+
+				PDFont font = resources.getFont(fontname);
+				System.out.println("Font: " + font.getFontDescriptor().getFontName());
+			}
+		}
+	}
+	
 	public void searchWordByLine(PDDocument document, String searchTerm) throws IOException {
 
 		String text = extractText(document);
@@ -373,6 +394,121 @@ public class App extends PDFStreamEngine {
 			System.out.println("[Error]Word does not exist");
 		}
 	}
+
+	public void darkMode(PDDocument document) throws IOException {
+
+		PDPageTree pages = document.getPages();
+
+		for (PDPage page : pages) {
+
+			try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.PREPEND, true, true)) {
+
+				contentStream.setNonStrokingColor(0.0f, 0.0f, 0.0f);
+
+				contentStream.addRect(0, 0, page.getMediaBox().getWidth(), page.getMediaBox().getHeight());
+
+				contentStream.fill();
+			}
+
+			setTextColor(document, "1.0", "1.0", "1.0");
+		}
+	}
+
+	public void mergePDFS(PDDocument... documents) throws IOException {
+
+		if (documents.length == 0) {
+
+			throw new IllegalArgumentException("No documents provided to merge.");
+		}
+
+		PDFMergerUtility merger = new PDFMergerUtility();
+		PDDocument destination = documents[0];
+
+		for (int i = 1; i < documents.length; i++) {
+
+			merger.appendDocument(destination, documents[i]);
+		}
+
+		destination.save(new File("C:/Users/Krish Vij/OneDrive/Documents/merged-resume.pdf"));
+		destination.close();
+
+		for (int i = 1; i < documents.length; i++) {
+			documents[i].close();
+		}
+	}
+
+	public void imagesToPDF(String imagesDirectoryPath) throws IOException {
+
+		File imageDir = new File(imagesDirectoryPath);
+
+		try (PDDocument doc = new PDDocument()) {
+
+			for (File image : imageDir.listFiles()) {
+
+				PDPage page = new PDPage();
+				doc.addPage(page);
+
+				PDImageXObject pdImage = PDImageXObject.createFromFile(image.getAbsolutePath(), doc);
+
+				try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+					{
+						
+						contents.drawImage(pdImage, 20, 20);
+					}
+				doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/image-resume.pdf"));
+			}
+		}
+	}
+
+	public void imagesToPDF(String... imagepath) throws IOException {
+
+		try (PDDocument doc = new PDDocument()) {
+
+			for (int i = 0; i < imagepath.length; i++) {
+
+				PDPage page = new PDPage();
+				doc.addPage(page);
+
+				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[0], doc);
+
+				try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+					{
+						
+						contents.drawImage(pdImage, 20, 20);
+					}
+				doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/image-resume" + System.nanoTime() + ".pdf"));
+			}
+		}
+	}
+
+	public void convertImagesToPDFSAndMergeThem(String... imagepath) throws IOException {
+
+		var documents = new ArrayList<PDDocument>();
+
+		try (PDDocument doc = new PDDocument()) {
+
+			for (int i = 0; i < imagepath.length; i++) {
+
+				PDPage page = new PDPage();
+				doc.addPage(page);
+
+				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[0], doc);
+
+				try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+					{
+						
+						contents.drawImage(pdImage, 20, 20);
+					}
+				
+				documents.add(doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output" + System.nanoTime() + ".pdf")));
+			}
+		}
+
+		// PDDocument destination = documents.get(0);
+
+		PDDocument[] documentsArray = documents.toArray();
+		mergePDFS(documentsArray);
+	}
 	
 	public void saveDocument(PDDocument document, File file) throws IOException {
 
@@ -387,7 +523,7 @@ public class App extends PDFStreamEngine {
 		
 		//ArrayList<BufferedImage> imageArray = new ArrayList<>();
 
-		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/file-sample_150kB.pdf");
+		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/Eligibility+Criteria+-+Technical+Batch+2026.pdf");
 
 		try (PDDocument document = Loader.loadPDF(file)) {
 
@@ -408,8 +544,15 @@ public class App extends PDFStreamEngine {
 			// System.out.println("Text in pdf: " + text);
 
 			//app.setTextColor(document, file, "1.0", "0.0", "0.0");
-			app.searchWordByLine(document, "lorem");
+			//app.searchWordByLine(document, "lorem");
 
+			//app.darkMode(document);
+
+			// app.listFonts(document);
+			// app.mergePDFS(document, document);
+
+			app.imagesToPDF("C:/Users/Krish Vij/pdfTestImage/");
+			app.convertImagesToPDFSAndMergeThem("C:/Users/Krish Vij/pdfTestImage/testImage.jpg", "C:/xUsers/Krish Vij/pdfTestImage/goImage.jpeg");
 			//app.setTextColor(document, file, "1.0", "0.0", "0.0");
 
 			//app.saveDocument(document, file);
