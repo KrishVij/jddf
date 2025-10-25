@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -512,6 +513,36 @@ public class App extends PDFStreamEngine {
 		PDDocument[] documentsArray = documents.toArray(new PDDocument[0]);
 		mergePDFS(documentsArray);
 	}
+
+	public void renderView(PDDocument document) throws IOException {
+
+		int numberOfpages = document.getNumberOfPages();
+
+		PDFRenderer renderer = new PDFRenderer(document);
+
+		for (int i = 0; i < numberOfpages; i++) {
+
+			BufferedImage img = renderer.renderImage(i);
+
+			File f = File.createTempFile("img", "png");
+
+			ImageIO.write(img, "PNG", f);
+
+			String path = f.getAbsolutePath();
+
+			try {
+
+				ProcessBuilder proc = new ProcessBuilder("wezterm", "imgcat", path);
+				Process process = proc.start();
+
+				int exitCode = process.waitFor();
+				System.out.println("Process exited with code: " + exitCode);
+			}catch (IOException | InterruptedException e) {
+
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public void saveDocument(PDDocument document, File file) throws IOException {
 
@@ -522,9 +553,9 @@ public class App extends PDFStreamEngine {
 
 		App app = new App();
 
-		//BufferedImage image = null;
+		// BufferedImage image = null;
 		
-		//ArrayList<BufferedImage> imageArray = new ArrayList<>();
+		// ArrayList<BufferedImage> imageArray = new ArrayList<>();
 
 		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/Eligibility+Criteria+-+Technical+Batch+2026.pdf");
 
@@ -554,8 +585,8 @@ public class App extends PDFStreamEngine {
 			// app.listFonts(document);
 			// app.mergePDFS(document, document);
 
-			app.imagesToPDF("C:/Users/Krish Vij/pdfTestImage/");
-			app.convertImagesToPDFSAndMergeThem("C:/Users/Krish Vij/pdfTestImage/testImage.jpg", "C:/xUsers/Krish Vij/pdfTestImage/goImage.jpeg");
+			// app.imagesToPDF("C:/Users/Krish Vij/pdfTestImage/");
+			// app.convertImagesToPDFSAndMergeThem("C:/Users/Krish Vij/pdfTestImage/testImage.jpg", "C:/xUsers/Krish Vij/pdfTestImage/goImage.jpeg");
 			//app.setTextColor(document, file, "1.0", "0.0", "0.0");
 
 			//app.saveDocument(document, file);
@@ -563,6 +594,8 @@ public class App extends PDFStreamEngine {
 			//app.convertAllToPNG(document);
 
 			//System.out.println(result);
+
+			app.renderView(document);
 
 			//document.save("C:/Users/Krish Vij/OneDrive/Documents/output.pdf");
 				
