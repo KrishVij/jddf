@@ -1,0 +1,10 @@
+package com.jddf.app;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
+@Command(name = "jddf", version = "jddf-1.0", mixinStandardHelpOptions = true)
+public class UserInterface implements Runnable {
+}
