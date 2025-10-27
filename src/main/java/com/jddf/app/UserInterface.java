@@ -12,9 +12,9 @@ import java.io.File;
 
 @Command(name = "jddf", version = "jddf-1.0", mixinStandardHelpOptions = true, subcommands = {
 
-		// ImageCommands.class,
+		ImageCommands.class,
 		TextCommands.class,
-		// VisualCommands.class,
+		VisualCommands.class,
 		DocumentCommands.class
 	})
 public class UserInterface implements Runnable {

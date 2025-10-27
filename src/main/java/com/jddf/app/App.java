@@ -155,7 +155,7 @@ public class App extends PDFStreamEngine {
 
 		ArrayList<BufferedImage> images = extractAllImages(document);
 
-		File directory = new File ("C:/Users/Krish Vij/testImages");
+		File directory = new File ("C:/Users/Krish Vij/pdfTestImage");
 
 		if (!directory.exists()) {
 

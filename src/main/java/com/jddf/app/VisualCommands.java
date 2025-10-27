@@ -1,0 +1,32 @@
+package com.jddf.app;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import java.io.File;
+
+@Command(name = "visual", description = "deals with how your document looks, difference from DocumentsCommand is that this focuses on how every component make your pdf look")
+public class VisualCommands implements Runnable {
+
+	public void run() {}
+
+	@Command(name = "--dark-mode", description = "Turns your pdf into a dark mode pdf the \"--\" makes this list of commands different from other commands")
+	public void visualDarkMode(@Parameters(paramLabel = "Document to convert to dark mdoe")File pdfile) throws Exception {
+
+		try {
+
+			App app = new App();
+
+			PDDocument document = Loader.loadPDF(pdfile);
+
+			app.darkMode(document);
+		}catch(Exception e) {
+
+			e.printStackTrace();
+		}
+	}
+}

@@ -14,7 +14,7 @@ public class ImageCommands implements Runnable {
 
 	public void run() {}
 
-	@Command(name = "extrac-all", description = "Extracts all images from a pdf file")
+	@Command(name = "extract-all", description = "Extracts all images from a pdf file")
 	public void imageStoreImageAsFiles(@Parameters(paramLabel = "Docuemnt to extract images from")File pdfile) throws Exception {
 
 		try {
@@ -22,7 +22,7 @@ public class ImageCommands implements Runnable {
 			App app = new App();
 			PDDocument document  = Loader.loadPDF(pdfile);
 
-			app.extarctAndStoreImagesAsFiles(document);
+			app.extractAndStoreImagesAsFiles(document);
 		}catch (Exception e) {
 
 			e.printStackTrace();
@@ -37,7 +37,7 @@ public class ImageCommands implements Runnable {
 			App app = new App();
 			PDDocument document  = Loader.loadPDF(pdfile);
 
-			app.extarctAndStoreImageAsFile(document);
+			app.extractAndStoreImageAsFile(document);
 		}catch (Exception e) {
 
 			e.printStackTrace();
