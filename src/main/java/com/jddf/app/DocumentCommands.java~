@@ -1,0 +1,34 @@
+package com.jddf.app;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import java.io.File;
+
+@Command(name = "doc", description = "Used for high-level operations on the document itself note teh contents For ex: merge,save")
+public class DocumentCommands Implements Runnable {
+
+	public void run() {}
+
+	@Command(name = "merge", description = "merge two or more documents")
+	public void mergeDoc(@Parameters(ParamLabel = "Multiple Pdf documents")File... pdfiles) {
+
+		App app = new App();
+
+		PDDocument[] documents = new PDDocument[pdfiles.length];
+
+		for (int i = 0; i < pdfiles.length; i++) {
+
+			documents[i] = Loader.loadPDF(pdfiles[i]);
+		}
+
+		app.mergePDFS(documents);
+	}
+
+	@Command(name = "save", description = "save the pdf document")
+	public void savedoc(@Parameters(ParamLabel = "Pdf document") PDDocument document) {}
+}

@@ -143,14 +143,17 @@ public class App extends PDFStreamEngine {
 		return images;
 	}
 
-	public void storeImageAsFile(BufferedImage img) throws IOException {
+	public void extractAndStoreImageAsFile(PDDocument document) throws IOException {
 
+		BufferedImage img = extractImage(document);
 		File file = new File("C:/Users/Krish Vij/OneDrive/Documents/" + System.nanoTime() + ".png");
 
 		ImageIO.write(img, "PNG", file);
 	}
 
-	public void storeImagesAsFiles(ArrayList<BufferedImage> images) throws IOException {
+	public void extractAndStoreImagesAsFiles(PDDocument document) throws IOException {
+
+		ArrayList<BufferedImage> images = extractAllImages(document);
 
 		File directory = new File ("C:/Users/Krish Vij/testImages");
 
@@ -287,9 +290,9 @@ public class App extends PDFStreamEngine {
 
 	public void setTextColor(PDDocument document, String r, String g, String b) throws IOException {
 
-		float	RED	  = Float.parseFloat(r);
-		float	GREEN = Float.parseFloat(g);
-		float	BLUE  = Float.parseFloat(b);
+		float	RED	  = Float.parseFloat(r)/ 255;
+		float	GREEN = Float.parseFloat(g)/ 255;
+		float	BLUE  = Float.parseFloat(b)/ 255;
 
 		PDPageTree pages = document.getPages();
 		int streamCounter = 0;
