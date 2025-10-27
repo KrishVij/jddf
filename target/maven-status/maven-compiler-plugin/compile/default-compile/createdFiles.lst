@@ -1,2 +1,4 @@
+com\jddf\app\DocumentCommands.class
+com\jddf\app\TextCommands.class
 com\jddf\app\UserInterface.class
 com\jddf\app\App.class
