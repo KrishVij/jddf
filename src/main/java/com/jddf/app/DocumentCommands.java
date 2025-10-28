@@ -39,11 +39,9 @@ public class DocumentCommands implements Runnable {
 	@Command(name = "save", description = "save the pdf document")
 	public void savedoc(@Parameters(paramLabel = "Pdf document") File sourceFile, File destinationFile) {
 
-		try {
+		App app = new App();
 
-			App app = new App();
-
-			PDDocument document = Loader.loadPDF(sourceFile);
+		try (PDDocument document = Loader.loadPDF(sourceFile)) {
 
 			app.saveDocument(document, destinationFile);
 		}catch (Exception e) {
@@ -55,11 +53,8 @@ public class DocumentCommands implements Runnable {
 	@Command(name = "list-fonts", description = "lists all the fonts in the video")
 	public void docListFonts(@Parameters(paramLabel = "Document You want to list fonts of") File pdfile) throws Exception {
 
-		try {
-
-			App app = new App();
-
-			PDDocument document = Loader.loadPDF(pdfile);
+		App app = new App();
+		try (PDDocument document = Loader.loadPDF(pdfile)) {
 
 			app.listFonts(document);
 		}catch (Exception e) {

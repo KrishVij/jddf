@@ -7,7 +7,9 @@ import picocli.CommandLine.Parameters;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+
 import java.io.File;
+import java.nio.file.Path;
 
 @Command(name = "image", description = "Deals with images in pdfs")
 public class ImageCommands implements Runnable {
@@ -15,32 +17,65 @@ public class ImageCommands implements Runnable {
 	public void run() {}
 
 	@Command(name = "extract-all", description = "Extracts all images from a pdf file")
-	public void imageStoreImageAsFiles(@Parameters(paramLabel = "Docuemnt to extract images from")File pdfile) throws Exception {
+	public void imageStoreImageAsFiles(@Parameters(paramLabel = "Document to extract images from")File pdfile, Path outDir) throws Exception {
 
-		try {
+		App app = new App();
+		try (PDDocument document  = Loader.loadPDF(pdfile)){
 
-			App app = new App();
-			PDDocument document  = Loader.loadPDF(pdfile);
-
-			app.extractAndStoreImagesAsFiles(document);
+			app.extractAndStoreImagesAsFiles(document, outDir);
 		}catch (Exception e) {
 
 			e.printStackTrace();
 		}
 	}
 
-	@Command(name = "extarct", description = "Extracts the first image from the document")
-	public void imageStoreAsFile(@Parameters(paramLabel = "Document to extarct image from") File pdfile) throws Exception {
+	@Command(name = "extract", description = "Extracts the first image from the document")
+	public void imageStoreAsFile(@Parameters(paramLabel = "Document to extract image from") File pdfile, Path outDir) throws Exception {
 
-		try {
+		App app = new App();
+		try (PDDocument document  = Loader.loadPDF(pdfile)){
 
-			App app = new App();
-			PDDocument document  = Loader.loadPDF(pdfile);
-
-			app.extractAndStoreImageAsFile(document);
+			app.extractAndStoreImageAsFile(document, outDir);
 		}catch (Exception e) {
 
 			e.printStackTrace();
 		}
 	}
+
+	@Command(name = "convert-all", description = "converts all images inside the docuemnt to png")
+	public void imageConvertToPNG(@Parameters(paramLabel = "Document with images to convert")File pdfile) throws Exception {
+
+		App app = new App();
+
+		try (PDDocument document  = Loader.loadPDF(pdfile)) {
+
+			app.convertAllToPNG(document);
+		}catch(Exception e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	@Command(name = "dir-to-pdf", description = "converts a given image to pdf")
+	public void imageImageToPdf(@Parameters(paramLabel = "Directory of images to be converted to pdf")String imageDirPath) throws Exception {
+
+		App app = new App();
+
+		app.imagesToPDF(imageDirPath);
+	}
+
+	@Command(name = "to-pdf", description = "Take any number of images and convert each to pdf")
+	public void imageImageToPdf(@Parameters(paramLabel = "Multiple images to be converted to their own pdf")String... imageDirPath) throws Exception {
+
+		App app = new App();
+
+		app.imagesToPDF(imageDirPath);
+	}
+
+	@Command(name = "merge-images", description = "Takes multiple images and merges them into a single PDF")
+    public void mergeImagesToPDF(@Parameters(paramLabel = "images", description = "Image files to convert and merge into one PDF") String... imagePaths) throws Exception {
+
+		App app = new App();
+        app.convertImagesToPDFSAndMergeThem(imagePaths);
+    }
 }

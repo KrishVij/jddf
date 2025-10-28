@@ -58,5 +58,19 @@ public class TextCommands implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	@Command(name = "search", description  = "searches for a term in a Document and prints all the insatnces of sentences it appears in")
+	public void textSearchWordByLine(@Parameters(paramLabel = "PDF")File pdfile,
+									 @Parameters(paramLabel = "SearchTerm")String term) throws Exception {
+
+		App app = new App();
+
+		try (PDDocument document = Loader.loadPDF(pdfile)) {
+
+			app.searchWordByLine(document, term);
+		}catch(Exception e) {
+
+			e.printStackTrace();
+		}
+	}
 }
 																			   
