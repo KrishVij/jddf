@@ -1,9 +1,6 @@
- package com.jddf.app; 
+package com.jddf.app; 
 
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -16,35 +13,25 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
-import org.apache.pdfbox.pdmodel.font.FontInfo;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.text.PDFTextStripperByArea;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
-import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.rendering.PDFRenderer;
-
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.Files;
 
 public class App extends PDFStreamEngine {
@@ -143,24 +130,27 @@ public class App extends PDFStreamEngine {
 		return images;
 	}
 
-	public void extractAndStoreImageAsFile(PDDocument document, String outDir) throws IOException {
+	public void extractAndStoreImageAsFile(PDDocument document, Path outDir) throws IOException {
 
 		BufferedImage img = extractImage(document);
+		// Path path = Paths.get(outDir);
 		Files.createDirectories(outDir);
 		Path out = outDir.resolve("image_" + System.nanoTime() + ".png").toAbsolutePath().normalize();
 
 		ImageIO.write(img, "PNG", out.toFile());
 	}
 
-	public void extractAndStoreImagesAsFiles(PDDocument document, String outDir) throws IOException {
+	public void extractAndStoreImagesAsFiles(PDDocument document, Path outDir) throws IOException {
 
 		ArrayList<BufferedImage> images = extractAllImages(document);
+
+		// Path path = Paths.get(outDir);
 
 	    Files.createDirectories(outDir);
 		
 		for (BufferedImage image : images) {
 
-			File file = new File(outDir.toFile(), "image_" + System.nanoTime() + ".png");
+			File file = outDir.resolve("image_" + System.nanoTime() + ".png").toFile();
 
 			try {
 
@@ -176,7 +166,7 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-	public void convertAllToPNG(PDDocument document, String outFile) throws IOException{
+	public void convertAllToPNG(PDDocument document, Path outDir) throws IOException{
 
 		PDPageTree pages = document.getPages();
 
@@ -194,9 +184,11 @@ public class App extends PDFStreamEngine {
 
 					BufferedImage img = imageXObject.getImage();
 
-				    File outFile = new File("C:/Users/Krish Vij/OneDrive/Pictures/" + System.nanoTime() + ".png");
+					// Path path = Paths.get(outFile);
+					
+					File file = outDir.resolve("image_" + System.nanoTime() + ".png").toFile();;
 
-					ImageIO.write(img, "PNG", outFile);
+					ImageIO.write(img, "PNG", file);
 
 					PDImageXObject pdImage = LosslessFactory.createFromImage(document, img);
 
@@ -210,9 +202,9 @@ public class App extends PDFStreamEngine {
 			}
 		}
 
-	    Path path = Path.get(outFile);
+	    // Path path = Paths.get(outFile);
 		//String outputFile = new File("output_" + System.nanoTime() + ".pdf").getAbsolutePath();
-		document.save(path.toFile());
+		document.save(outDir.resolve("converted_" + System.nanoTime() + ".pdf").toFile());
 	}
 
 	ArrayList<Double> coordinates = new ArrayList<Double>();
@@ -242,30 +234,30 @@ public class App extends PDFStreamEngine {
 		return;
 	}
 	
-	public ArrayList<Double> getCoordinates(Matrix ctmNew) {
+		public ArrayList<Double> getCoordinates(Matrix ctmNew) {
 
-		coordinates.add((double)ctmNew.getTranslateX());
+			coordinates.add((double)ctmNew.getTranslateX());
 
-		coordinates.add((double)ctmNew.getTranslateY());
+			coordinates.add((double)ctmNew.getTranslateY());
 
-		coordinates.add((double)ctmNew.getScaleX());
+			coordinates.add((double)ctmNew.getScaleX());
 
-		coordinates.add((double)ctmNew.getScaleY());
+			coordinates.add((double)ctmNew.getScaleY());
 
-		return coordinates;
-	}
+			return coordinates;
+		}
 
-	public String extractText(PDDocument document) throws IOException {
+		public String extractText(PDDocument document) throws IOException {
 
-		PDFTextStripper stripper = new PDFTextStripper();
+			PDFTextStripper stripper = new PDFTextStripper();
 
-		return stripper.getText(document);
+			return stripper.getText(document);
 		
-	}
+		}
 
-	public String extractTextColor(PDDocument document) throws IOException {
+		public String extractTextColor(PDDocument document) throws IOException {
 
-		PDPageTree pages = document.getPages();
+			PDPageTree pages = document.getPages();
 
 		String nameOfColor = "";
 
@@ -281,7 +273,7 @@ public class App extends PDFStreamEngine {
 		return nameOfColor;
 	}
 
-	public void setTextColor(PDDocument document, String r, String g, String b, String outFile) throws IOException {
+	public void setTextColor(PDDocument document, String r, String g, String b, Path outFile) throws IOException {
 
 		float	RED	  = Float.parseFloat(r)/ 255;
 		float	GREEN = Float.parseFloat(g)/ 255;
@@ -344,9 +336,9 @@ public class App extends PDFStreamEngine {
 			page.setContents(newStreams);
 		}
 
-		Path path = Path.get(outFile);
+		// Path path = Paths.get(outFile);
 		//document.save(new File("C:/Users/Krish Vij/OneDrive/Documents/output-resume.pdf"));
-		document.save(path.toFile());
+		document.save(outFile.toFile());
 		System.out.println(streamCounter);
 	}
 
@@ -394,7 +386,7 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-	public void darkMode(PDDocument document) throws IOException {
+	public void darkMode(PDDocument document, Path outFile) throws IOException {
 
 		PDPageTree pages = document.getPages();
 
@@ -409,7 +401,7 @@ public class App extends PDFStreamEngine {
 				contentStream.fill();
 			}
 
-			setTextColor(document, "1.0", "1.0", "1.0");
+			setTextColor(document, "1.0", "1.0", "1.0", outFile);
 		}
 	}
 
@@ -436,11 +428,11 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-	public void imagesToPDF(String imagesDirectoryPath, String outFile) throws IOException {
+	public void imagesToPDF(Path imagesDirectoryPath, Path outFile) throws IOException {
 
-		File imageDir = new File(imagesDirectoryPath);
+		File imageDir = imagesDirectoryPath.toFile();
 
-		File file = new File(outFile);
+		File file = outFile.toFile();
 
 		try (PDDocument doc = new PDDocument()) {
 
@@ -457,14 +449,16 @@ public class App extends PDFStreamEngine {
 						contents.drawImage(pdImage, 20, 20);
 					}
 				//doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/image-resume.pdf"));
-				doc.save(outFile);
+				
 			}
+
+			doc.save(file);
 		}
 	}
 
-	public void imagesToPDF(String outFile, String... imagepath) throws IOException {
+	public void imagesToPDF(Path outFile, String... imagepath) throws IOException {
 
-		File file = new File(outFile);
+		File file = outFile.toFile();
 
 		try (PDDocument doc = new PDDocument()) {
 
@@ -481,16 +475,17 @@ public class App extends PDFStreamEngine {
 						contents.drawImage(pdImage, 20, 20);
 					}
 				//doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/image-resume" + System.nanoTime() + ".pdf"));
-				doc.save(outFile);
+				
 			}
+
+			doc.save(file);
 		}
 	}
 
-	public void convertImagesToPDFSAndMergeThem(String outputPath, String... imagepath) throws IOException {
+	public void convertImagesToPDFSAndMergeThem(Path outputPath, String... imagepath) throws IOException {
 
 		var documents = new ArrayList<PDDocument>();
-		Path path = Path.get(outputPath);
-		//String outputPath = "C:/Users/Krish Vij/OneDrive/Documents/output" + System.nanoTime() + ".pdf";
+
 		try (PDDocument doc = new PDDocument()) {
 
 			for (int i = 0; i < imagepath.length; i++) {
@@ -498,21 +493,17 @@ public class App extends PDFStreamEngine {
 				PDPage page = new PDPage();
 				doc.addPage(page);
 
-				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[0], doc);
+				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[i], doc);
 
-				try (PDPageContentStream contents = new PDPageContentStream(doc, page))
-					{
-						
-						contents.drawImage(pdImage, 20, 20);
-					}
-
-				doc.save(new File(path.toFile()));
-
-				documents.add(doc);
+				try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
+					contents.drawImage(pdImage, 20, 20);
+				}
 			}
-		}
 
-		// PDDocument destination = documents.get(0);
+			// ✅ Save once, after all pages are added
+			doc.save(outputPath.toFile());
+			documents.add(doc);
+		}
 
 		PDDocument[] documentsArray = documents.toArray(new PDDocument[0]);
 		mergePDFS(documentsArray);
