@@ -1,15 +1,12 @@
 package com.jddf.app;
 
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Command(name = "image", description = "Deals with images in pdfs")
@@ -57,20 +54,26 @@ public class ImageCommands implements Runnable {
 		}
 	}
 
-	@Command(name = "dir-to-pdf", description = "converts a given image to pdf")
-	public void imageDirToPdf(@Parameters(paramLabel = "Directory of images to be converted to pdf")String imageDirPath, String outFile) throws Exception {
+	@Command(name = "dir-to-pdf", description = "converts a given directory of images to pdf")
+	public void imageDirToPdf(@Parameters(paramLabel = "Directory of images to be converted to pdf")String imageDirPath, String outDir) throws Exception {
 
 		App app = new App();
 
-		app.imagesToPDF(Paths.get(imageDirPath), Paths.get(outFile));
+		app.imagesToPDF(Paths.get(imageDirPath), Paths.get(outDir));
 	}
 
 	@Command(name = "to-pdf", description = "Take any number of images and convert each to pdf")
-	public void imageMultieToPdf(@Parameters(paramLabel = "Multiple images to be converted to their own pdf")String outFile, String... imagePath) throws Exception {
+	public void imageMultiToPdf(@Parameters(paramLabel = "Output Directory",description = "Output Directory to save the PDF'S (default: current dir)")String outDir, 
+	                            @Parameters(paramLabel = "image files", description = "Paths to your selected images")String... imagePath) throws Exception {
+
+		if (imagePath.length == 0) {
+
+			throw new IllegalArgumentException("No images provided.");
+		}
 
 		App app = new App();
-
-		app.imagesToPDF(Paths.get(outFile), imagePath);
+		
+		app.imagesToSeparatePDFS(Paths.get(outDir), imagePath);
 	}
 
 	@Command(name = "merge-images", description = "Takes multiple images and merges them into a single PDF")

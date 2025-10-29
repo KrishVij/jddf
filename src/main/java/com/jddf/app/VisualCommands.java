@@ -1,14 +1,10 @@
 package com.jddf.app;
 
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Command(name = "visual", description = "deals with how your document looks, difference from DocumentsCommand is that this focuses on how every component make your pdf look")

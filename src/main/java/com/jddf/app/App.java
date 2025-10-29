@@ -228,20 +228,20 @@ public class App extends PDFStreamEngine {
 		return;
 	}
 	
-		public ArrayList<Double> getCoordinates(Matrix ctmNew) {
+	public ArrayList<Double> getCoordinates(Matrix ctmNew) {
+		
+		coordinates.add((double)ctmNew.getTranslateX());
 
-			coordinates.add((double)ctmNew.getTranslateX());
-
-			coordinates.add((double)ctmNew.getTranslateY());
-
-			coordinates.add((double)ctmNew.getScaleX());
-
-			coordinates.add((double)ctmNew.getScaleY());
-
-			return coordinates;
-		}
-
-		public String extractText(PDDocument document) throws IOException {
+		coordinates.add((double)ctmNew.getTranslateY());
+		
+		coordinates.add((double)ctmNew.getScaleX());
+		
+		coordinates.add((double)ctmNew.getScaleY());
+		
+		return coordinates;
+	}
+	
+	public String extractText(PDDocument document) throws IOException {
 
 			PDFTextStripper stripper = new PDFTextStripper();
 
@@ -253,15 +253,16 @@ public class App extends PDFStreamEngine {
 
 			PDPageTree pages = document.getPages();
 
-		String nameOfColor = "";
-
-		for (PDPage page : pages) {
+		    String nameOfColor = "";
+			
+			for (PDPage page : pages) {
 
 			processPage(page);
 
 			PDColor color = getGraphicsState().getNonStrokingColor();
 
 			nameOfColor = color.toString();
+		
 		}
 
 		return nameOfColor;
@@ -450,13 +451,9 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-	public void imagesToPDF(String[] imagepath, Path... outFile) throws IOException {
-
-		if (imagepath.length != outFile.length) {
-
-			throw new IllegalArgumentException("Number of images and output files must be the same.");
-		}
-
+	public void imagesToSeparatePDFS(Path outDir, String... imagepath) throws IOException {
+		
+		Files.createDirectories(outDir);
 
 		for (int i = 0; i < imagepath.length; i++) {
 
@@ -472,15 +469,17 @@ public class App extends PDFStreamEngine {
 						
 						contents.drawImage(pdImage, 20, 20);
 					}
-				doc.save(outFile[i].toFile());
+				
+				Path outFile = outDir.resolve("image_converted_" + System.nanoTime() + ".pdf").toAbsolutePath().normalize();
+				doc.save(outFile.toFile());
 
-				System.err.println("Saved: " + outFile[i].toString());
+				System.out.println("Saved: " + outFile.toString());
 			}
 		}
 	}
 
-	public void convertImagesToPDFSAndMergeThem(Path outputPath, String... imagepath) throws IOException {
-
+    public void convertImagesToPDFSAndMergeThem(Path outputPath, String... imagepath) throws IOException {
+		
 		var documents = new ArrayList<PDDocument>();
 
 		try (PDDocument doc = new PDDocument()) {
