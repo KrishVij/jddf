@@ -133,7 +133,7 @@ public class App extends PDFStreamEngine {
 	public void extractAndStoreImageAsFile(PDDocument document, Path outDir) throws IOException {
 
 		BufferedImage img = extractImage(document);
-		// Path path = Paths.get(outDir);
+		
 		Files.createDirectories(outDir);
 		Path out = outDir.resolve("image_" + System.nanoTime() + ".png").toAbsolutePath().normalize();
 
@@ -144,7 +144,6 @@ public class App extends PDFStreamEngine {
 
 		ArrayList<BufferedImage> images = extractAllImages(document);
 
-		// Path path = Paths.get(outDir);
 
 	    Files.createDirectories(outDir);
 		
@@ -184,7 +183,6 @@ public class App extends PDFStreamEngine {
 
 					BufferedImage img = imageXObject.getImage();
 
-					// Path path = Paths.get(outFile);
 					
 					File file = outDir.resolve("image_" + System.nanoTime() + ".png").toFile();;
 
@@ -202,8 +200,6 @@ public class App extends PDFStreamEngine {
 			}
 		}
 
-	    // Path path = Paths.get(outFile);
-		//String outputFile = new File("output_" + System.nanoTime() + ".pdf").getAbsolutePath();
 		document.save(outDir.resolve("converted_" + System.nanoTime() + ".pdf").toFile());
 	}
 
@@ -213,8 +209,6 @@ public class App extends PDFStreamEngine {
 	protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
 
 		String operation = operator.getName();
-
-		//ArrayList<Double> coordinates = new ArrayList<>();
 
 		if ("Do".equals(operation)) {
 
@@ -456,29 +450,32 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-	public void imagesToPDF(Path outFile, String... imagepath) throws IOException {
+	public void imagesToPDF(String[] imagepath, Path... outFile) throws IOException {
 
-		File file = outFile.toFile();
+		if (imagepath.length != outFile.length) {
 
-		try (PDDocument doc = new PDDocument()) {
+			throw new IllegalArgumentException("Number of images and output files must be the same.");
+		}
 
-			for (int i = 0; i < imagepath.length; i++) {
+
+		for (int i = 0; i < imagepath.length; i++) {
+
+			try (PDDocument doc = new PDDocument()) {
 
 				PDPage page = new PDPage();
 				doc.addPage(page);
 
-				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[0], doc);
+				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[i], doc);
 
 				try (PDPageContentStream contents = new PDPageContentStream(doc, page))
 					{
 						
 						contents.drawImage(pdImage, 20, 20);
 					}
-				//doc.save(new File("C:/Users/Krish Vij/OneDrive/Documents/image-resume" + System.nanoTime() + ".pdf"));
-				
-			}
+				doc.save(outFile[i].toFile());
 
-			doc.save(file);
+				System.err.println("Saved: " + outFile[i].toString());
+			}
 		}
 	}
 
