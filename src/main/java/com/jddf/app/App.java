@@ -457,6 +457,18 @@ public class App extends PDFStreamEngine {
 
 		for (int i = 0; i < imagepath.length; i++) {
 
+			File imgFile = new File(imagepath[i]);
+
+			System.out.println("Processing: " + imgFile.getAbsolutePath());
+
+			String name = imgFile.getName().toLowerCase();
+				
+			if (!(name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".bmp") || name.endsWith(".gif"))) {
+					
+				System.out.println("Skipping unsupported file format: " + name);
+				continue;
+			}
+
 			try (PDDocument doc = new PDDocument()) {
 
 				PDPage page = new PDPage();
@@ -485,6 +497,16 @@ public class App extends PDFStreamEngine {
 		try (PDDocument doc = new PDDocument()) {
 
 			for (int i = 0; i < imagepath.length; i++) {
+
+				File imgFile = new File(imagepath[i]);
+
+				String name = imgFile.getName().toLowerCase();
+
+				if (!(name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".bmp") || name.endsWith(".gif"))) {
+					
+					System.out.println("Skipping unsupported file format: " + name);
+					continue;
+				}
 
 				PDPage page = new PDPage();
 				doc.addPage(page);
