@@ -1,15 +1,13 @@
 package com.jddf.app;
 
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.File;
 
-@Command(name = "doc", description = "Used for high-level operations on the document itself note teh contents For ex: merge,save")
+@Command(name = "doc", description = "Used for high-level operations on the document itself note For ex: merge,save")
 public class DocumentCommands implements Runnable {
 
 	public void run() {}

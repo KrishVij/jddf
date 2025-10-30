@@ -55,7 +55,7 @@ public class ImageCommands implements Runnable {
 		}
 	}
 
-	@Command(name = "dir-to-pdf", description = "converts a given directory of images to pdf")
+	@Command(name = "dir-to-pdf", description = "converts a given directory of images to a single merged pdf")
 	public void imageDirToPdf(@Parameters(paramLabel = "Directory of images to be converted to pdf")String imageDirPath, String outDir) throws Exception {
 
 		App app = new App();
@@ -77,7 +77,7 @@ public class ImageCommands implements Runnable {
 		app.imagesToSeparatePDFS(Paths.get(outDir), imagePath);
 	}
 
-	@Command(name = "merge-images", description = "Takes multiple images and merges them into a single PDF")
+	@Command(name = "merge-images", description = "Takes multiple images and merges them into a single PDF the images do not need to be in the same directory")
     public void mergeImagesToPDF(@Parameters(paramLabel = "images", description = "Image files to convert and merge into one PDF") String outFile, String... imagePaths) throws Exception {
 
 		App app = new App();
