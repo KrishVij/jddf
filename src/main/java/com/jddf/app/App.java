@@ -432,20 +432,24 @@ public class App extends PDFStreamEngine {
 		}
 
 		PDFMergerUtility merge = new PDFMergerUtility();
-		PDDocument destination = Loader.loadPDF(pdFiles[0]);
-		for (File pdFile : pdFiles) {
+		File dest = pdFiles[0];
 
-			PDDocument current = Loader.loadPDF(pdFile);
+		try (PDDocument empty = new PDDocument()) {
+
+			PDPage page = new PDPage();
+			empty.addPage(page);
+			empty.save(dest);
+		}
+		
+		PDDocument destination = Loader.loadPDF(pdFiles[0]);
+		for (int i = 1; i < pdFiles.length; i++) {
+
+			PDDocument current = Loader.loadPDF(pdFiles[i]);
 			merge.appendDocument(destination, current);
 		}
 
 		destination.save(pdFiles[0]);
 		destination.close();
-
-		for (int i = 1; i < pdFiles.length; i++) {
-
-			Loader.loadPDF(pdFiles[i]).close();
-		}
 	}
 
 	public void imagesToPDF(Path imagesDirectoryPath, Path outFile) throws IOException {
@@ -515,41 +519,43 @@ public class App extends PDFStreamEngine {
 		}
 	}
 
-    public void convertImagesToPDFSAndMergeThem(Path outputPath, String... imagepath) throws IOException {
+    public void convertImagesToPDFSAndMergeThem(Path outputPath, Path... imagePaths) throws IOException {
 		
-		var documents = new ArrayList<PDDocument>();
+		var pdFiles = new ArrayList<File>();
+		
+		for (Path imagePath : imagePaths) {
 
-		try (PDDocument doc = new PDDocument()) {
+			File imgFile = imagePath.toFile();
 
-			for (int i = 0; i < imagepath.length; i++) {
+			String name = imgFile.getName().toLowerCase();
 
-				File imgFile = new File(imagepath[i]);
-
-				String name = imgFile.getName().toLowerCase();
-
-				if (!(name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".bmp") || name.endsWith(".gif"))) {
+			if (!(name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".bmp") || name.endsWith(".gif"))) {
 					
-					System.out.println("Skipping unsupported file format: " + name);
-					continue;
-				}
+				System.out.println("Skipping unsupported file format: " + name);
+				continue;
+			}
 
-				PDPage page = new PDPage();
+			try (PDDocument doc =  new PDDocument()) {
+			    PDPage page = new PDPage();
 				doc.addPage(page);
 
-				PDImageXObject pdImage = PDImageXObject.createFromFile(imagepath[i], doc);
+				PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath.toString(), doc);
 
 				try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
 					contents.drawImage(pdImage, 20, 20);
 				}
-			}
 
-			// ✅ Save once, after all pages are added
-			doc.save(outputPath.toFile());
-			documents.add(doc);
+				File tempFile = File.createTempFile("tempFile", ".pdf");
+				tempFile.deleteOnExit(); 
+				doc.save(tempFile);
+				pdFiles.add(tempFile);
+
+			}
 		}
 
-		PDDocument[] documentsArray = documents.toArray(new PDDocument[0]);
-		mergePDFS(documentsArray);
+		pdFiles.add(0, outputPath.toFile());
+		File[] pdFilesArray = pdFiles.toArray(new File[0]);
+		mergePDFS(pdFilesArray);
 	}
 
 	public void renderView(PDDocument document) throws IOException {

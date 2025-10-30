@@ -6,7 +6,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 @Command(name = "image", description = "Deals with images in pdfs")
 public class ImageCommands implements Runnable {
@@ -79,6 +81,14 @@ public class ImageCommands implements Runnable {
     public void mergeImagesToPDF(@Parameters(paramLabel = "images", description = "Image files to convert and merge into one PDF") String outFile, String... imagePaths) throws Exception {
 
 		App app = new App();
-        app.convertImagesToPDFSAndMergeThem(Paths.get(outFile), imagePaths);
+
+		    Path outputPath = Paths.get(outFile);
+			Path[] imagePathsArr = Arrays.stream(imagePaths)
+                                   .map(Paths::get)
+                                   .toArray(Path[]::new);
+			
+		app.convertImagesToPDFSAndMergeThem(outputPath, imagePathsArr);
+
+		System.out.println("Merged images into: " + outFile);
     }
 }
