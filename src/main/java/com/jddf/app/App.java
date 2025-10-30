@@ -16,6 +16,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -420,6 +421,30 @@ public class App extends PDFStreamEngine {
 
 		for (int i = 1; i < documents.length; i++) {
 			documents[i].close();
+		}
+	}
+
+	public void mergePDFS(File... pdFiles) throws IOException {
+
+		if (pdFiles.length == 0) {
+
+			throw new IllegalArgumentException("No documents provided to merge.");
+		}
+
+		PDFMergerUtility merge = new PDFMergerUtility();
+		PDDocument destination = Loader.loadPDF(pdFiles[0]);
+		for (File pdFile : pdFiles) {
+
+			PDDocument current = Loader.loadPDF(pdFile);
+			merge.appendDocument(destination, current);
+		}
+
+		destination.save(pdFiles[0]);
+		destination.close();
+
+		for (int i = 1; i < pdFiles.length; i++) {
+
+			Loader.loadPDF(pdFiles[i]).close();
 		}
 	}
 
