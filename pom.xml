@@ -53,7 +53,7 @@
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
@@ -116,7 +116,7 @@
           <version>3.6.1</version>
         </plugin>
       </plugins>
-    </pluginManagement>
+    
   </build>
 </project>
 
