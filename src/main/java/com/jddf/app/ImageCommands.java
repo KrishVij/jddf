@@ -19,6 +19,17 @@ public class ImageCommands implements Runnable {
 	public void imageStoreImageAsFiles(@Parameters(paramLabel = "Document to extract images from")File pdfile, String outDir) throws Exception {
 
 		App app = new App();
+
+		if (pdfile == null) {
+
+			throw new IllegalArgumentException("No document provided.");
+		}
+
+		if (!pdfile.getName().toLowerCase().endsWith(".pdf")) {
+
+			throw new IllegalArgumentException("Provided file is not a PDF document.");
+		}
+		
 		try (PDDocument document  = Loader.loadPDF(pdfile)){
 
 			app.extractAndStoreImagesAsFiles(document, Paths.get(outDir));
@@ -32,6 +43,17 @@ public class ImageCommands implements Runnable {
 	public void imageStoreAsFile(@Parameters(paramLabel = "Document to extract image from") File pdfile, String outDir) throws Exception {
 
 		App app = new App();
+
+		if (pdfile == null) {
+
+			throw new IllegalArgumentException("No document provided.");
+		}
+
+		if (!pdfile.getName().toLowerCase().endsWith(".pdf")) {
+
+			throw new IllegalArgumentException("Provided file is not a PDF document.");
+		}
+
 		try (PDDocument document  = Loader.loadPDF(pdfile)){
 
 			app.extractAndStoreImageAsFile(document, Paths.get(outDir));
@@ -46,6 +68,16 @@ public class ImageCommands implements Runnable {
 
 		App app = new App();
 
+				if (pdfile == null) {
+
+			throw new IllegalArgumentException("No document provided.");
+		}
+
+		if (!pdfile.getName().toLowerCase().endsWith(".pdf")) {
+
+			throw new IllegalArgumentException("Provided file is not a PDF document.");
+		}
+
 		try (PDDocument document  = Loader.loadPDF(pdfile)) {
 
 			app.convertAllToPNG(document, Paths.get(outFile));
@@ -59,6 +91,11 @@ public class ImageCommands implements Runnable {
 	public void imageDirToPdf(@Parameters(paramLabel = "Directory of images to be converted to pdf")String imageDirPath, String outDir) throws Exception {
 
 		App app = new App();
+
+		if (Paths.get(imageDirPath) == null) {
+
+			throw new IllegalArgumentException("No image directory provided.");
+		}
 
 		app.imagesToPDF(Paths.get(imageDirPath), Paths.get(outDir));
 	}
@@ -82,10 +119,15 @@ public class ImageCommands implements Runnable {
 
 		App app = new App();
 
-		    Path outputPath = Paths.get(outFile);
-			Path[] imagePathsArr = Arrays.stream(imagePaths)
-                                   .map(Paths::get)
-                                   .toArray(Path[]::new);
+		if (imagePaths.length == 0) {
+
+			throw new IllegalArgumentException("No images provided.");
+		}
+		
+		Path outputPath = Paths.get(outFile);
+		Path[] imagePathsArr = Arrays.stream(imagePaths)
+                                     .map(Paths::get)
+                                     .toArray(Path[]::new);
 			
 		app.convertImagesToPDFSAndMergeThem(outputPath, imagePathsArr);
 

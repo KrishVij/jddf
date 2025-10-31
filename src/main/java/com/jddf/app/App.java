@@ -132,7 +132,7 @@ public class App extends PDFStreamEngine {
 	}
 
 	public void extractAndStoreImageAsFile(PDDocument document, Path outDir) throws IOException {
-
+        
 		BufferedImage img = extractImage(document);
 		
 		Files.createDirectories(outDir);
@@ -275,6 +275,11 @@ public class App extends PDFStreamEngine {
 		float	GREEN = Float.parseFloat(g)/ 255;
 		float	BLUE  = Float.parseFloat(b)/ 255;
 
+		if (RED < 0 || RED > 1 || GREEN < 0 || GREEN > 1 || BLUE < 0 || BLUE > 1) {
+			
+			throw new IllegalArgumentException("Color values must be in the range 0–255.");
+		}
+		
 		PDPageTree pages = document.getPages();
 		int streamCounter = 0;
 
@@ -461,6 +466,14 @@ public class App extends PDFStreamEngine {
 		try (PDDocument doc = new PDDocument()) {
 
 			for (File image : imageDir.listFiles()) {
+
+				String name = image.getName().toLowerCase();
+
+				if (!(name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".bmp") || name.endsWith(".gif"))) {
+					
+					System.out.println("Skipping unsupported file format: " + name);
+					continue;
+			    }
 
 				PDPage page = new PDPage();
 				doc.addPage(page);
