@@ -15,6 +15,14 @@ public class VisualCommands implements Runnable {
 	@Command(name = "--dark-mode", description = "Turns your pdf into a dark mode pdf the \"--\" makes this list of commands different from other commands")
 	public void visualDarkMode(@Parameters(paramLabel = "Document to convert to dark mdoe")File pdfile, String outFile) throws Exception {
 
+		if (pdfile == null || !pdfile.getName().toLowerCase().endsWith(".pdf")) {
+
+			throw new IllegalArgumentException("Provided file is not a PDF document.");
+		}else if (outFile == null || !outFile.toLowerCase().endsWith(".pdf")) {
+
+			throw new IllegalArgumentException("Provided output file is not a PDF document.");
+		}
+		
 		App app = new App();
 		try (PDDocument document = Loader.loadPDF(pdfile)){
 
