@@ -1,4 +1,6 @@
-![JDDF Logo](assets/jddf.png)
+<p align="center">
+  <img src="assets/jddf.png.png" width="200" alt="JDDF Logo"/>
+</p>
 
 # 🧩 JDDF — Java Document Dynamic Framework
 
